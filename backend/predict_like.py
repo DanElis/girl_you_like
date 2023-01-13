@@ -44,6 +44,7 @@ def predict_like(image, type_predict):
         ratings.append(pred[0][0])
 
     max_rating = max(ratings)
+    print('rating', max_rating)
     # If the maximal rating received for a profile's photo is greater than 3, like the profile.
     if max_rating > 3:
         liked = True
