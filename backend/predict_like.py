@@ -4,8 +4,11 @@ import cv2
 import keras.models
 import numpy as np
 from PIL import Image
+from tenserflow as tf
 
-FBP_model = keras.models.load_model('model2.h5')
+
+with tf.device('/cpu:0'):
+    FBP_model = keras.models.load_model('model2.h5')
 
 CASCADE = "Face_cascade.xml"
 FACE_CASCADE = cv2.CascadeClassifier(CASCADE)
