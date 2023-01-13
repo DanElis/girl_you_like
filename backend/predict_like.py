@@ -1,6 +1,9 @@
+import argparse
+
 import cv2
 import keras.models
 import numpy as np
+from PIL import Image
 
 FBP_model = keras.models.load_model('model2.h5')
 
@@ -30,7 +33,6 @@ def extract_faces(image):
 
 def predict_like(image, type_predict):
     ratings = []
-    max_rating = 0
     processed_faces = extract_faces(image)
     liked = False
     if (type_predict == "clear" and len(processed_faces) > 1) or len(processed_faces) == 0:
@@ -46,3 +48,13 @@ def predict_like(image, type_predict):
     if max_rating > 3:
         liked = True
     return liked
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--image-path", dest="img_path", type=str)
+    args = parser.parse_args()
+    img_path = args.img_path
+    img = Image.open(img_path)
+    liked = predict_like(img, "all")
+    print(liked)
