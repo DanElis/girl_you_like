@@ -1,5 +1,6 @@
 import io
 
+import numpy as np
 from PIL import Image
 from fastapi import APIRouter
 from fastapi import File
