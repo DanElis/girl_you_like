@@ -72,3 +72,4 @@ if __name__ == '__main__':
 
         img = cv2.imread(f"{img_path}/{img_name}")
         liked = predict_like(img, "all")
+        print(img_name, liked)
