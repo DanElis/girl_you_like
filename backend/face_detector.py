@@ -51,7 +51,7 @@ class MPFaceDetection:
             left = int(detection.location_data.relative_bounding_box.xmin * frame_width)
             top = int(detection.location_data.relative_bounding_box.ymin * frame_height)
 
-            detections.append([top, left, top + height, left + width])
+            detections.append([left, top, width, height])
 
         return np.array(detections)
 
