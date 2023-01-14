@@ -57,7 +57,7 @@ def predict_like(image, type_predict):
 
     max_rating = max(ratings)
 
-    if max_rating > 3:
+    if max_rating > 2.65:
         liked = True
     return liked
 
