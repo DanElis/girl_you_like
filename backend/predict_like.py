@@ -18,7 +18,7 @@ face_detector = MPFaceDetection()
 
 def extract_faces(image):
     processed_images = []
-    faces = face_detector(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    faces = face_detector(image)
     if faces is None:
         return []
     # image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     img_path = args.img_path
 
     for img_name in os.listdir(img_path):
-
         img = cv2.imread(f"{img_path}/{img_name}")
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         liked = predict_like(img, "all")
         print(img_name, liked)

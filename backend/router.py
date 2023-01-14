@@ -16,4 +16,5 @@ async def apply_effect(file: UploadFile = File(...), type_predict: str = Form("a
     if type_predict not in ['all', 'clear']:
         raise ValueError(f'type_predict must be all or clear. Get {type_predict}')
     img = Image.open(io.BytesIO(file.file.read()))
+    img = np.array(img)
     return predict_like(img, type_predict)
