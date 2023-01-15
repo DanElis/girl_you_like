@@ -23,7 +23,7 @@ async def like(file: UploadFile = File(...), type_predict: str = Form("all")):
     return predict_like(img, type_predict)
 
 
-@router.post("/like_on_directory")
+@router.post("/like_directory")
 async def like_on_directory(dir_path: str = Form(...), type_predict: str = Form("all")):
     if type_predict not in ['all', 'clear']:
         raise ValueError(f'type_predict must be all or clear. Get {type_predict}')
