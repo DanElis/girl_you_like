@@ -1,5 +1,7 @@
 import argparse
+import json
 import os
+from pathlib import Path
 
 import cv2
 import keras.models
@@ -64,12 +66,20 @@ def predict_like(image, type_predict):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--image-path", dest="img_path", type=str)
+    parser.add_argument("--image-path", dest="img_path", type=str, default='/mnt/c/inst_proj/main/#singapore')
     args = parser.parse_args()
-    img_path = args.img_path
+    dir_path = args.img_path
+    results = []
+    dir_path = Path(dir_path)
+    for img_name in os.listdir(dir_path):
+        if img_name.split('.')[-1].lower() not in ['.jpeg', '.png', 'jpg']:
+            continue
 
-    for img_name in os.listdir(img_path):
-        img = cv2.imread(f"{img_path}/{img_name}")
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        liked = predict_like(img, "all")
-        print(img_name, liked)
+        img = Image.open(dir_path / img_name)
+        img = np.array(img)
+        results.append((img_name, predict_like(img, 'all')))
+    json_object = json.dumps({'results': results}, indent=4)
+
+    with open('/mnt/c/inst_proj/main/singapore_results.json', 'w') as f:
+        f.write(json_object)
+
