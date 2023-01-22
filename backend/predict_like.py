@@ -10,6 +10,7 @@ from PIL import Image
 import tensorflow as tf
 
 from face_detector import MPFaceDetection
+from facial_atribute_predict import FacialAttributeClassifier
 
 with tf.device('/cpu:0'):
     FBP_model = keras.models.load_model('model2.h5')
@@ -17,6 +18,8 @@ with tf.device('/cpu:0'):
 CASCADE = "Face_cascade.xml"
 # FACE_CASCADE = cv2.CascadeClassifier(CASCADE)
 face_detector = MPFaceDetection()
+facial_attribute_classifier = FacialAttributeClassifier()
+
 
 def extract_faces(image):
     processed_images = []
@@ -46,7 +49,7 @@ def extract_faces(image):
 
 
 def predict_like(image, type_predict):
-    ratings = []
+    ratings = [0.]
     processed_faces = extract_faces(image)
     liked = False
     if (type_predict == "clear" and len(processed_faces) > 1) or len(processed_faces) == 0:
@@ -54,7 +57,14 @@ def predict_like(image, type_predict):
 
     for face in processed_faces:
         # Apply the neural network to predict face beauty.
+        gender, age = facial_attribute_classifier.gender_age(face)
+        print(gender, age)
+        if age not in ['(15-20)', '(25-32)', '(38-43)']:
+            continue
+        if gender != 'Female':
+            continue
         pred = FBP_model.predict(np.expand_dims(face, 0))
+        print(pred)
         ratings.append(pred[0][0])
 
     max_rating = max(ratings)
@@ -72,14 +82,15 @@ if __name__ == '__main__':
     results = []
     dir_path = Path(dir_path)
     for img_name in os.listdir(dir_path):
+        print(img_name)
         if img_name.split('.')[-1].lower() not in ['.jpeg', '.png', 'jpg']:
             continue
 
         img = Image.open(dir_path / img_name)
         img = np.array(img)
         results.append((img_name, predict_like(img, 'all')))
-    json_object = json.dumps({'results': results}, indent=4)
 
-    with open('/mnt/c/inst_proj/main/singapore_results.json', 'w') as f:
-        f.write(json_object)
+    # json_object = json.dumps({'results': results}, indent=4)
+    # with open('/mnt/c/inst_proj/main/singapore_results.json', 'w') as f:
+    #     f.write(json_object)
 
