@@ -48,12 +48,11 @@ def extract_faces(image):
     return processed_images
 
 
-def predict_like(image, type_predict):
-    ratings = [0.]
+def face_rating(image, type_predict):
+    ratings = [-1]
     processed_faces = extract_faces(image)
-    liked = False
     if (type_predict == "clear" and len(processed_faces) > 1) or len(processed_faces) == 0:
-        return liked
+        return -1
 
     for face in processed_faces:
         # Apply the neural network to predict face beauty.
@@ -66,12 +65,19 @@ def predict_like(image, type_predict):
         pred = FBP_model.predict(np.expand_dims(face, 0))
         print(pred)
         ratings.append(pred[0][0])
+    return max(ratings)
 
-    max_rating = max(ratings)
 
+def is_it_like(max_rating):
+    liked = False
     if max_rating > 2.65:
         liked = True
     return liked
+
+
+def predict_like(image, type_predict):
+    max_rating = face_rating(image, type_predict)
+    return is_it_like(max_rating)
 
 
 if __name__ == '__main__':
@@ -93,4 +99,3 @@ if __name__ == '__main__':
     # json_object = json.dumps({'results': results}, indent=4)
     # with open('/mnt/c/inst_proj/main/singapore_results.json', 'w') as f:
     #     f.write(json_object)
-
