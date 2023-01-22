@@ -9,6 +9,7 @@ from fastapi import File
 from fastapi import Form
 from fastapi import UploadFile
 
+from parse_path import convert_u
 from predict_like import predict_like, face_rating, is_it_like
 
 router = APIRouter(prefix="/effects")
@@ -28,6 +29,8 @@ async def like_on_directory(dir_path: str = Form(...), type_predict: str = Form(
     if type_predict not in ['all', 'clear']:
         raise ValueError(f'type_predict must be all or clear. Get {type_predict}')
     results = []
+    if is_win_path(dir_path):
+        dir_path = convert_u(dir_path)
     dir_path = Path(dir_path)
     for img_name in os.listdir(dir_path):
         if img_name.split('.')[-1].lower() not in ['.jpeg', '.png', 'jpg']:
@@ -44,6 +47,8 @@ async def like_profile(dir_path: str = Form(...), type_predict: str = Form("all"
     if type_predict not in ['all', 'clear']:
         raise ValueError(f'type_predict must be all or clear. Get {type_predict}')
     ratings = []
+    if is_win_path(dir_path):
+        dir_path = convert_u(dir_path)
     dir_path = Path(dir_path)
     for img_name in os.listdir(dir_path):
         if img_name.split('.')[-1].lower() not in ['.jpeg', '.png', 'jpg']:
@@ -56,3 +61,9 @@ async def like_profile(dir_path: str = Form(...), type_predict: str = Form("all"
             continue
         ratings.append(rating)
     return is_it_like(np.mean(ratings))
+
+
+def is_win_path(path):
+    if 'C:\\' in path:
+        return True
+    return False
