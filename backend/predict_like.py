@@ -1,19 +1,21 @@
 import argparse
-import json
 import os
 from pathlib import Path
 
 import cv2
-import keras.models
 import numpy as np
-from PIL import Image
 import tensorflow as tf
+from PIL import Image
+from keras import backend as K
 
 from face_detector import MPFaceDetection
 from facial_atribute_predict import FacialAttributeClassifier
 
 with tf.device('/cpu:0'):
-    FBP_model = keras.models.load_model('model2.h5')
+    FBP_model = tf.saved_model.load(sess=K.get_session(),
+                                    tags=[tf.saved_model.tag_constants.SERVING],
+                                    export_dir='model2-tf')
+
 
 CASCADE = "Face_cascade.xml"
 # FACE_CASCADE = cv2.CascadeClassifier(CASCADE)
@@ -62,8 +64,10 @@ def face_rating(image, type_predict):
             continue
         if gender != 'Female':
             continue
-        pred = FBP_model.predict(np.expand_dims(face, 0))
-        print(pred)
+        with K.get_session() as sess:
+            x = tf.get_default_graph().get_tensor_by_name('resnet50_input:0')
+            y = tf.get_default_graph().get_tensor_by_name('dense_1/BiasAdd:0')
+            pred = sess.run(y, feed_dict={x: np.expand_dims(face, 0)})
         ratings.append(pred[0][0])
     return max(ratings)
 
