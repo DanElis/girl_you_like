@@ -33,6 +33,7 @@ async def like_on_directory(dir_path: str = Form(...), type_predict: str = Form(
         dir_path = convert_u(dir_path)
     dir_path = Path(dir_path)
     for img_name in os.listdir(dir_path):
+        print(img_name)
         if img_name.split('.')[-1].lower() not in ['.jpeg', '.png', 'jpg']:
             continue
 
