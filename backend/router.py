@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 from PIL import Image
 from fastapi import APIRouter
 from fastapi import File
@@ -41,6 +42,9 @@ async def like_on_directory(dir_path: str = Form(...), type_predict: str = Form(
             continue
         img = np.array(img)
         results.append((img_name, predict_like(img, type_predict)))
+    df = pd.DataFrame(results, columns=['Image', 'Predict'])
+    save_path = dir_path.parent / f'{dir_path.name}.csv'
+    df.to_csv(save_path)
     return results
 
 
